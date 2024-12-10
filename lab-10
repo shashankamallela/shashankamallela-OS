@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_TEXT 100
+
+// Structure for message queue
+struct msg_buffer {
+    long msg_type;
+    char msg_text[MAX_TEXT];
+};
+
+int main() {
+    key_t key = ftok("msgfile", 65);  // Generate unique key
+    int msgid = msgget(key, 0666 | IPC_CREAT);  // Create message queue
+    if (msgid == -1) {
+        perror("msgget failed");
+        exit(1);
+    }
+
+    struct msg_buffer message;
+
+    // Send message to the queue
+    message.msg_type = 1;
+    printf("Enter message to send: ");
+    fgets(message.msg_text, MAX_TEXT, stdin);
+    if (msgsnd(msgid, &message, sizeof(message), 0) == -1) {
+        perror("msgsnd failed");
+        exit(1);
+    }
+
+    // Receive message from the queue
+    if (msgrcv(msgid, &message, sizeof(message), 1, 0) == -1) {
+        perror("msgrcv failed");
+        exit(1);
+    }
+    printf("Received message: %s\n", message.msg_text);
+
+    // Destroy the message queue
+    msgctl(msgid, IPC_RMID, NULL);
+    return 0;
+}
