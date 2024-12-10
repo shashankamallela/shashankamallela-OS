@@ -1,0 +1,24 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+// A simple function that prints a message from the thread
+void* printMessage(void* arg) {
+    printf("Hello from the thread!\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t thread1, thread2;
+    
+    // Create two threads
+    pthread_create(&thread1, NULL, printMessage, NULL);
+    pthread_create(&thread2, NULL, printMessage, NULL);
+    
+    // Wait for both threads to finish
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+    
+    printf("Main thread finishes.\n");
+    return 0;
+}
