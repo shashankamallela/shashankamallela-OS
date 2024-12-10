@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int pid;
+    int bt;  // Burst time
+    int priority;
+    int wt;  // Waiting time
+    int tat; // Turnaround time
+} Process;
+
+void findWaitingTime(Process proc[], int n) {
+    proc[0].wt = 0;  // First process has no waiting time
+    for (int i = 1; i < n; i++) {
+        proc[i].wt = proc[i - 1].bt + proc[i - 1].wt;
+    }
+}
+
+void findTurnaroundTime(Process proc[], int n) {
+    for (int i = 0; i < n; i++) {
+        proc[i].tat = proc[i].bt + proc[i].wt;
+    }
+}
+
+void sortByPriority(Process proc[], int n) {
+    Process temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (proc[i].priority > proc[j].priority) {
+                temp = proc[i];
+                proc[i] = proc[j];
+                proc[j] = temp;
+            }
+        }
+    }
+}
+
+void printProcessDetails(Process proc[], int n) {
+    printf("PID\tBurst Time\tPriority\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t\t%d\t\t%d\t\t%d\n", proc[i].pid, proc[i].bt, proc[i].priority, proc[i].wt, proc[i].tat);
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    Process proc[n];
+    for (int i = 0; i < n; i++) {
+        proc[i].pid = i + 1;
+        printf("Enter burst time and priority for process %d: ", i + 1);
+        scanf("%d %d", &proc[i].bt, &proc[i].priority);
+    }
+
+    sortByPriority(proc, n);  // Sort processes by priority
+
+    findWaitingTime(proc, n);
+    findTurnaroundTime(proc, n);
+
+    printProcessDetails(proc, n);
+
+    return 0;
+}
