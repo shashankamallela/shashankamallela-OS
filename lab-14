@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_FILES 100
+#define NAME_LENGTH 50
+
+typedef struct {
+    char name[NAME_LENGTH];
+    int isOccupied;
+} File;
+
+void createFile(File directory[], int *fileCount) {
+    if (*fileCount >= MAX_FILES) {
+        printf("Directory is full! Cannot create more files.\n");
+        return;
+    }
+
+    char fileName[NAME_LENGTH];
+    printf("Enter file name to create: ");
+    scanf("%s", fileName);
+
+    // Check for duplicate file names
+    for (int i = 0; i < *fileCount; i++) {
+        if (directory[i].isOccupied && strcmp(directory[i].name, fileName) == 0) {
+            printf("File already exists.\n");
+            return;
+        }
+    }
+
+    strcpy(directory[*fileCount].name, fileName);
+    directory[*fileCount].isOccupied = 1;
+    (*fileCount)++;
+
+    printf("File '%s' created successfully.\n", fileName);
+}
+
+void deleteFile(File directory[], int *fileCount) {
+    char fileName[NAME_LENGTH];
+    printf("Enter file name to delete: ");
+    scanf("%s", fileName);
+
+    for (int i = 0; i < *fileCount; i++) {
+        if (directory[i].isOccupied && strcmp(directory[i].name, fileName) == 0) {
+            directory[i].isOccupied = 0;
+            printf("File '%s' deleted successfully.\n", fileName);
+            return;
+        }
+    }
+
+    printf("File '%s' not found.\n", fileName);
+}
+
+void searchFile(File directory[], int fileCount) {
+    char fileName[NAME_LENGTH];
+    printf("Enter file name to search: ");
+    scanf("%s", fileName);
+
+    for (int i = 0; i < fileCount; i++) {
+        if (directory[i].isOccupied && strcmp(directory[i].name, fileName) == 0) {
+            printf("File '%s' found.\n", fileName);
+            return;
+        }
+    }
+
+    printf("File '%s' not found.\n", fileName);
+}
+
+void displayFiles(File directory[], int fileCount) {
+    printf("Files in the directory:\n");
+    int found = 0;
+    for (int i = 0; i < fileCount; i++) {
+        if (directory[i].isOccupied) {
+            printf("%d. %s\n", i + 1, directory[i].name);
+            found = 1;
+        }
+    }
+    if (!found) {
+        printf("No files found.\n");
+    }
+}
+
+int main() {
+    File directory[MAX_FILES];
+    int fileCount = 0;
+
+    // Initialize the directory
+    for (int i = 0; i < MAX_FILES; i++) {
+        directory[i].isOccupied = 0;
+    }
+
+    int choice;
+    while (1) {
+        printf("\n--- Single Level Directory System ---\n");
+        printf("1. Create File\n");
+        printf("2. Delete File\n");
+        printf("3. Search File\n");
+        printf("4. Display Files\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                createFile(directory, &fileCount);
+                break;
+            case 2:
+                deleteFile(directory, &fileCount);
+                break;
+            case 3:
+                searchFile(directory, fileCount);
+                break;
+            case 4:
+                displayFiles(directory, fileCount);
+                break;
+            case 5:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+
+    return 0;
+}
